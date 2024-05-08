@@ -40,9 +40,22 @@ defmodule Extrakt.Handler do
     %{ request | status_code: 200, response_body: "Bear #{idx}!" }
   end
 
+  def route(%{ method: "GET", path: "/about" } = request) do
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    |> File.read
+    |> handle_file(request)
+  end
+
   def route(%{ path: path } = request) do
     %{ request | status_code: 404, response_body: "No #{path} found!" }
   end
+
+  def handle_file({ :ok, content }, request), do: %{ request | status_code: 200, response_body: content }
+  def handle_file({ :error, :enoent }, request), do: %{ request | status_code: 404, response_body: "File not found!" }
+  def handle_file({ :error, reason }, request), do: %{ request | status_code: 500, response_body: "File error: #{reason}!" }
+
+
 
   def format_response(request) do
     """
@@ -68,7 +81,7 @@ end
 
 
 request = """
-  GET /bears/2 HTTP/1.1
+  GET /about HTTP/1.1
   HOST: example.com
   User-Agent: ExampleBrowser/1.0
   Accept: */*
