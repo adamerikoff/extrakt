@@ -1,4 +1,4 @@
-defmodule Extrakt.Request do
+defmodule Extrakt.Context do
   defstruct method: "",
             path: "",
             response_body: "",
@@ -6,7 +6,7 @@ defmodule Extrakt.Request do
             params: %{},
             headers: %{}
 
-  def full_status(request), do: "#{request.status_code} #{status(request.status_code)}"
+  def full_status(context), do: "#{context.status_code} #{status(context.status_code)}"
 
   defp status(code) do
     %{

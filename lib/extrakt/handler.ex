@@ -1,6 +1,6 @@
 defmodule Extrakt.Handler do
   alias Extrakt.ProductController, as: ProductController
-  alias Extrakt.Request, as: Request
+  alias Extrakt.Context, as: Context
 
   @pages_folder Path.expand("../../pages", __DIR__)
 
@@ -14,51 +14,51 @@ defmodule Extrakt.Handler do
     |> format_response
   end
 
-  def route(%Request{ method: "GET", path: "/products" } = request) do
-    ProductController.index(request)
+  def route(%Context{ method: "GET", path: "/products" } = context) do
+    ProductController.index(context)
   end
 
-  def route(%Request{ method: "GET", path: "/products/" <> idx } = request) do
-    params = Map.put(request.params, "idx", idx)
-    ProductController.show(request, params)
+  def route(%Context{ method: "GET", path: "/products/" <> idx } = context) do
+    params = Map.put(context.params, "idx", idx)
+    ProductController.show(context, params)
   end
 
-  def route(%Request{ method: "POST", path: "/products"} = request) do
-    ProductController.create(request, request.params)
+  def route(%Context{ method: "POST", path: "/products"} = context) do
+    ProductController.create(context, context.params)
   end
 
-  def route(%Request{ method: "GET", path: "/about" } = request) do
+  def route(%Context{ method: "GET", path: "/about" } = context) do
     @pages_folder
     |> Path.join("about.html")
     |> File.read
-    |> handle_file(request)
+    |> handle_file(context)
   end
 
-  def route(%Request{ path: path } = request) do
-    %{ request | status_code: 404, response_body: "No #{path} found!" }
+  def route(%Context{ path: path } = context) do
+    %{ context | status_code: 404, response_body: "No #{path} found!" }
   end
 
-  def handle_file({ :ok, content }, request), do: %{ request | status_code: 200, response_body: content }
-  def handle_file({ :error, :enoent }, request), do: %{ request | status_code: 404, response_body: "File not found!" }
-  def handle_file({ :error, reason }, request), do: %{ request | status_code: 500, response_body: "File error: #{reason}!" }
+  def handle_file({ :ok, content }, context), do: %{ context | status_code: 200, response_body: content }
+  def handle_file({ :error, :enoent }, context), do: %{ context | status_code: 404, response_body: "File not found!" }
+  def handle_file({ :error, reason }, context), do: %{ context | status_code: 500, response_body: "File error: #{reason}!" }
 
 
 
-  def format_response(%Request{} = request) do
+  def format_response(%Context{} = context) do
     """
-      HTTP/1.1 #{Request.full_status(request)}
+      HTTP/1.1 #{context.full_status(context)}
       Content-Type: text/html
-      Content-Length: #{String.length(request.response_body)}
+      Content-Length: #{String.length(context.response_body)}
 
-      #{request.response_body}
+      #{context.response_body}
     """
   end
 
 end
 
 
-request = """
-  GET /products/1 HTTP/1.1
+context = """
+  GET /products/18 HTTP/1.1
   HOST: example.com
   User-Agent: ExampleBrowser/1.0
   Accept: */*
@@ -66,9 +66,8 @@ request = """
   Content-Length: 21
 
 
-  name=lkfasfafjl&type=Brown
 """
 
-response = Extrakt.Handler.handle(request)
+response = Extrakt.Handler.handle(context)
 
 IO.puts(response)

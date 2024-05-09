@@ -1,17 +1,17 @@
 defmodule Extrakt.Utils do
-  alias Extrakt.Request, as: Request
-  def track(%Request{ status_code: 404, path: path } = request) do
+  alias Extrakt.Context, as: Context
+  def track(%Context{ status_code: 404, path: path } = context) do
     IO.puts "Warning: #{path} doesn't exist!"
-    request
+    context
   end
 
-  def track(%Request{} = request), do: request
+  def track(%Context{} = context), do: context
 
-  def rewrite_path(%Request{ path: "/items" } = request) do
-    %{ request| path: "/products" }
+  def rewrite_path(%Context{ path: "/items" } = context) do
+    %{ context| path: "/products" }
   end
 
-  def rewrite_path(%Request{} = request), do: request
+  def rewrite_path(%Context{} = context), do: context
 
-  def log(%Request{} = request), do: IO.inspect request
+  def log(%Context{} = context), do: IO.inspect context
 end

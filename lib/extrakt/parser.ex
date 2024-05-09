@@ -1,13 +1,13 @@
 defmodule Extrakt.Parser do
-  alias Extrakt.Request, as: Request
-  def parse(request) do
-    [top, params_string] = String.split(request, "\n\n")
+  alias Extrakt.Context, as: Context
+  def parse(context) do
+    [top, params_string] = String.split(context, "\n\n")
     [request_line | header_lines] =  String.split(top, "\n")
     [method, path, _] = String.trim(request_line) |> String.split(" ")
     headers = parse_headers(header_lines, %{})
     params = parse_params(headers["Content-Type"], params_string)
 
-    %Request{
+    %Context{
       method: method,
       path: path,
       params: params,

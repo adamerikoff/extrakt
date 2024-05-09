@@ -1,21 +1,30 @@
 defmodule Extrakt.ProductController do
-alias Extrakt.DB, as: DB
+  alias Extrakt.DB, as: DB
 
-  def index(request) do
-    items =
-      DB.list_products()
-      |> Enum.map(fn(item) -> "<li>#{item.name} - #{item.type} - #{item.in_stock}</li>" end)
-      |> Enum.join
+  @templates_folder Path.expand("../../templates", __DIR__)
 
-    %{ request | status_code: 200, response_body: "<ul>#{items}</ul>" }
+  def index(context) do
+    products = DB.list_products()
+
+    render(context, "index.eex", products)
   end
 
-  def show(request, %{ "idx" => idx }) do
+  def show(context, %{ "idx" => idx }) do
     product = DB.get_product(idx)
-    %{ request | status_code: 200, response_body: "<h1>Product #{product.id}: #{product.name} - #{product.type}.</h1>" }
+
+    render(context, "show.eex", product)
   end
 
-  def create(request, %{ "name" => name, "type" => type }) do
-    %{ request | status_code: 201, response_body: "Created a #{name}-#{type}!" }
+  def create(context, %{ "name" => name, "type" => type }) do
+    %{ context | status_code: 201, response_body: "Created a #{name}-#{type}!" }
+  end
+
+  defp render(context, template, bindings \\ []) do
+    content =
+      @templates_folder
+      |> Path.join(template)
+      |> EEx.eval_file(bindings)
+
+      %{ context | status_code: 200, response_body: content }
   end
 end
