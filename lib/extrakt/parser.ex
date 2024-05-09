@@ -1,4 +1,5 @@
 defmodule Extrakt.Parser do
+  alias Extrakt.Request, as: Request
   def parse(request) do
     [method, path, _] =
       request
@@ -7,10 +8,9 @@ defmodule Extrakt.Parser do
       |> String.trim
       |> String.split(" ")
 
-    %{
+    %Request{
       method: method,
-      path: path,
-      response_body: "",
-      status_code: nil }
+      path: path
+    }
   end
 end

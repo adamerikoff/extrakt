@@ -1,4 +1,6 @@
 defmodule Extrakt.Handler do
+  alias Extrakt.Request, as: Request
+
   @pages_folder Path.expand("../../pages", __DIR__)
 
   def handle(request) do
@@ -11,26 +13,26 @@ defmodule Extrakt.Handler do
     |> format_response
   end
 
-  def route(%{ method: "GET", path: "/wildthings" } = request) do
+  def route(%Request{ method: "GET", path: "/wildthings" } = request) do
     %{ request | status_code: 200, response_body: "Bears, Lions, Tigers" }
   end
 
-  def route(%{ method: "GET", path: "/bears" } = request) do
+  def route(%Request{ method: "GET", path: "/bears" } = request) do
     %{ request | status_code: 200, response_body: "Teddy, Smokey, Wilfried" }
   end
 
-  def route(%{ method: "GET", path: "/bears/" <> idx } = request) do
+  def route(%Request{ method: "GET", path: "/bears/" <> idx } = request) do
     %{ request | status_code: 200, response_body: "Bear #{idx}!" }
   end
 
-  def route(%{ method: "GET", path: "/about" } = request) do
+  def route(%Request{ method: "GET", path: "/about" } = request) do
     @pages_folder
     |> Path.join("about.html")
     |> File.read
     |> handle_file(request)
   end
 
-  def route(%{ path: path } = request) do
+  def route(%Request{ path: path } = request) do
     %{ request | status_code: 404, response_body: "No #{path} found!" }
   end
 
@@ -40,9 +42,9 @@ defmodule Extrakt.Handler do
 
 
 
-  def format_response(request) do
+  def format_response(%Request{} = request) do
     """
-      HTTP/1.1 #{request.status_code} #{status(request.status_code)}
+      HTTP/1.1 #{Request.full_status(request)}
       Content-Type: text/html
       Content-Length: #{String.length(request.response_body)}
 
@@ -50,16 +52,6 @@ defmodule Extrakt.Handler do
     """
   end
 
-  defp status(code) do
-    %{
-      200 => "OK",
-      201 => "Created",
-      401 => "Unauthorized",
-      403 => "Forbidden",
-      404 => "Not Found",
-      500 => "Internal Server Error",
-    }[code]
-  end
 end
 
 
