@@ -7,8 +7,8 @@ defmodule Extrakt.Utils do
 
   def track(%Request{} = request), do: request
 
-  def rewrite_path(%Request{ path: "/wildlife" } = request) do
-    %{ request| path: "/wildthings" }
+  def rewrite_path(%Request{ path: "/items" } = request) do
+    %{ request| path: "/products" }
   end
 
   def rewrite_path(%Request{} = request), do: request

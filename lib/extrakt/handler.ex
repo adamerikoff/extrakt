@@ -1,4 +1,5 @@
 defmodule Extrakt.Handler do
+  alias Extrakt.ProductController, as: ProductController
   alias Extrakt.Request, as: Request
 
   @pages_folder Path.expand("../../pages", __DIR__)
@@ -13,20 +14,17 @@ defmodule Extrakt.Handler do
     |> format_response
   end
 
-  def route(%Request{ method: "GET", path: "/wildthings" } = request) do
-    %{ request | status_code: 200, response_body: "Bears, Lions, Tigers" }
+  def route(%Request{ method: "GET", path: "/products" } = request) do
+    ProductController.index(request)
   end
 
-  def route(%Request{ method: "GET", path: "/bears" } = request) do
-    %{ request | status_code: 200, response_body: "Teddy, Smokey, Wilfried" }
+  def route(%Request{ method: "GET", path: "/products/" <> idx } = request) do
+    params = Map.put(request.params, "idx", idx)
+    ProductController.show(request, params)
   end
 
-  def route(%Request{ method: "GET", path: "/bears/" <> idx } = request) do
-    %{ request | status_code: 200, response_body: "Bear #{idx}!" }
-  end
-
-  def route(%Request{ method: "POST", path: "/bears"} = request) do
-    %{ request | status_code: 201, response_body: "Created a #{request.params["name"]}!" }
+  def route(%Request{ method: "POST", path: "/products"} = request) do
+    ProductController.create(request, request.params)
   end
 
   def route(%Request{ method: "GET", path: "/about" } = request) do
@@ -60,7 +58,7 @@ end
 
 
 request = """
-  POST /bears HTTP/1.1
+  GET /products/1 HTTP/1.1
   HOST: example.com
   User-Agent: ExampleBrowser/1.0
   Accept: */*
