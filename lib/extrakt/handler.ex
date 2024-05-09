@@ -1,32 +1,15 @@
 defmodule Extrakt.Handler do
+  @pages_folder Path.expand("../../pages", __DIR__)
+
   def handle(request) do
     request
-    |> parse
-    |> log
+    |> Extrakt.Parser.parse
+    |> Extrakt.Utils.rewrite_path
+    |> Extrakt.Utils.log
     |> route
+    |> Extrakt.Utils.track
     |> format_response
   end
-
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first
-      |> String.trim
-      |> String.split(" ")
-
-    %{
-      method: method,
-      path: path,
-      response_body: "",
-      status_code: nil }
-  end
-
-  def log(request), do: IO.inspect(request)
-
-  # def route(request) do
-  #   route(request, request.method, request.path)
-  # end
 
   def route(%{ method: "GET", path: "/wildthings" } = request) do
     %{ request | status_code: 200, response_body: "Bears, Lions, Tigers" }
@@ -41,7 +24,7 @@ defmodule Extrakt.Handler do
   end
 
   def route(%{ method: "GET", path: "/about" } = request) do
-    Path.expand("../../pages", __DIR__)
+    @pages_folder
     |> Path.join("about.html")
     |> File.read
     |> handle_file(request)
