@@ -1,5 +1,9 @@
 defmodule Extrakt.Request do
-  defstruct method: "", path: "", response_body: "", status_code: nil
+  defstruct method: "",
+            path: "",
+            response_body: "",
+            status_code: nil,
+            params: %{}
 
   def full_status(request), do: "#{request.status_code} #{status(request.status_code)}"
 

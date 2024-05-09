@@ -25,6 +25,11 @@ defmodule Extrakt.Handler do
     %{ request | status_code: 200, response_body: "Bear #{idx}!" }
   end
 
+  def route(%Request{ method: "POST", path: "/bears"} = request) do
+    params = %{ "name" => "Baloo", "type" => "Brown" }
+    %{ request | status_code: 201, response_body: "Created a #{params["name"]}!" }
+  end
+
   def route(%Request{ method: "GET", path: "/about" } = request) do
     @pages_folder
     |> Path.join("about.html")
@@ -56,11 +61,15 @@ end
 
 
 request = """
-  GET /about HTTP/1.1
+  POST /bears HTTP/1.1
   HOST: example.com
   User-Agent: ExampleBrowser/1.0
   Accept: */*
+  Content-Type: application/x-www-form-urlencoded
+  Content-Length: 21
 
+
+  name=Baloo&type=Brown
 """
 
 response = Extrakt.Handler.handle(request)
