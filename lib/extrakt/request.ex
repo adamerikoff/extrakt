@@ -3,7 +3,8 @@ defmodule Extrakt.Request do
             path: "",
             response_body: "",
             status_code: nil,
-            params: %{}
+            params: %{},
+            headers: %{}
 
   def full_status(request), do: "#{request.status_code} #{status(request.status_code)}"
 

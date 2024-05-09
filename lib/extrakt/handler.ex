@@ -26,8 +26,7 @@ defmodule Extrakt.Handler do
   end
 
   def route(%Request{ method: "POST", path: "/bears"} = request) do
-    params = %{ "name" => "Baloo", "type" => "Brown" }
-    %{ request | status_code: 201, response_body: "Created a #{params["name"]}!" }
+    %{ request | status_code: 201, response_body: "Created a #{request.params["name"]}!" }
   end
 
   def route(%Request{ method: "GET", path: "/about" } = request) do
@@ -69,7 +68,7 @@ request = """
   Content-Length: 21
 
 
-  name=Baloo&type=Brown
+  name=lkfasfafjl&type=Brown
 """
 
 response = Extrakt.Handler.handle(request)
