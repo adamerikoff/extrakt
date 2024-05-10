@@ -1,4 +1,13 @@
-defmodule Extrakt do
+defmodule Extrakt.Server do
+  @moduledoc """
+  This module defines a cowboy HTTP server and starts it
+  on a port
+  """
+
+  @doc """
+  This function starts a Cowboy server on the given port.
+  Routes for the server are defined in CowboyExample.Router
+  """
   def start(port) do
     routes = Extrakt.Router.routes()
 
